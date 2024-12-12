@@ -1,7 +1,7 @@
 import logging
 import torch
 import streamlit as st
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
 # Streamlit page configuration
@@ -16,22 +16,13 @@ def load_model_and_tokenizer():
     base_model_id = "NousResearch/Llama-2-7b-chat-hf"
     peft_model_id = "ShahzaibDev/Llama2-7B-Qna"
 
-    # Configure quantization
-    quantization_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.float16,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="nf4"
-    )
-
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 
-    # Load the base model with quantization
+    # Load the base model without quantization
     base_model = AutoModelForCausalLM.from_pretrained(
         base_model_id,
-        device_map="auto",
-        quantization_config=quantization_config
+        device_map="auto",  # This automatically uses the available hardware, like GPU if present
     )
 
     # Load the fine-tuned PEFT model
